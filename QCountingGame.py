@@ -69,7 +69,8 @@ for g in range(num_of_games):
         if random.random()<epsilon:
             choice = random.randint(1,choicelim)
         else:
-            choice = q_table[state].idxmax() #issue with this is picks lowest index when tied -> us picking low numbers+tending to win more when have less scenarios
+            options = list(q_table.loc[q_table[state]==q_table[state].max()].T.columns) #lists the best moves according to q table
+            choice = random.sample(options,1)[0] # randomly tiebreaks from these best moves
         reward, game_over, opp_game_over = game.ourplay(choice) #this does our move+opponents
         total_reward += reward
         if game_over or opp_game_over: #if weve lost or opponent has, q(next state) used to update will be 0 as be in terminal state
