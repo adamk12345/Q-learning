@@ -91,10 +91,7 @@ for g in range(num_of_test_games):
     total_reward = 0
     while not game_over and not opp_game_over:
         state=game.board
-        if random.random()<epsilon:
-            choice = random.randint(1,choicelim)
-        else:
-            choice = q_table[state].idxmax()
+        choice = q_table[state].idxmax()
         reward, game_over, opp_game_over = game.ourplay(choice) #this does our move+opponents
         total_reward += reward
         if not game_over and not opp_game_over:  
