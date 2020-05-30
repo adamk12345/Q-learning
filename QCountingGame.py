@@ -1,20 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Apr 13 15:14:38 2020
-
-@author: -
-"""
-
-#i go second -> can always win in this game -> it works! always win with opponent choosing at random and 10 settings
-####### mark places to change if doing more
-
-
-
-# could use Q function at end of run as opponent q function + then improve ours more
-
-
-
-
 import random
 import pandas as pd
 import numpy as np
@@ -34,9 +17,8 @@ class Game:
         self.reset()
         
     def reset(self):
-        #################################
         self.board = random.randint(1,choicelim) #this is opponent go first
-        #################################
+       
         
     def opponentplay(self, opponentchoice):
         #opponent makes their move, game ends or not
@@ -55,10 +37,8 @@ class Game:
         if new_board < self.board_lim:#if our choice stays in bounds, set board and let opponent go
             self.board = new_board
             game_over = False
-            #######################################################
             x = random.randint(1,choicelim)
             opp_game_over = self.opponentplay(x)
-            #######################################################
             if opp_game_over:
                 return (100, game_over, opp_game_over)
             else:
@@ -75,9 +55,7 @@ epsilon = 0.1
 gamma = 1  #discount rate          
 alpha = 0.7
 
-#################################################################################
 q_table = pd.DataFrame(0, index=np.arange(1,choicelim+1,1), columns=np.arange(lim))
-#################################################################################
 r_list = []
 
 for g in range(num_of_games):
@@ -88,9 +66,7 @@ for g in range(num_of_games):
     while not game_over and not opp_game_over:
         state=game.board
         if random.random()<epsilon:
-            #############################
             choice = random.randint(1,choicelim)
-            #############################
         else:
             choice = q_table[state].idxmax() #issue with this is picks lowest index when tied -> us picking low numbers+tending to win more when have less scenarios
         reward, game_over, opp_game_over = game.ourplay(choice) #this does our move+opponents
@@ -116,9 +92,7 @@ for g in range(2000):
     while not game_over and not opp_game_over:
         state=game.board
         if random.random()<epsilon:
-            ################################
             choice = random.randint(1,choicelim)
-            ################################
         else:
             choice = q_table[state].idxmax()
         reward, game_over, opp_game_over = game.ourplay(choice) #this does our move+opponents
@@ -131,7 +105,7 @@ for g in range(2000):
            
         q_table.loc[choice,state] = q_table.loc[choice,state]+alpha*(reward + gamma * (next_state_max_q_val -q_table.loc[choice,state]))
     r_list.append(total_reward)     
-   ########## 
+
     
 plt.figure(figsize=(14,7))
 plt.plot(range(2000),r_list)
