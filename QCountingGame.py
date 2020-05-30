@@ -3,12 +3,13 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-lim =10
-choicelim =2
-#choice =1 to 10
+lim =10 #this is the target we dont want to hit
+choicelim =2 # pick a number between 1 and choicelim
 num_of_games = 2000
+num_of_test_games = 2000 # number of games we will test our code on
 
 class Game:
+    # this class holds the functions used to run the game
     board =None
     board_lim=0
     
@@ -17,11 +18,11 @@ class Game:
         self.reset()
         
     def reset(self):
-        self.board = random.randint(1,choicelim) #this is opponent go first
+        self.board = random.randint(1,choicelim) # we reset each game to opponents random first choice
        
         
     def opponentplay(self, opponentchoice):
-        #opponent makes their move, game ends or not
+        # opponent makes their move, game ends or not
         start_board = self.board + opponentchoice
         game_over = start_board >= self.board_lim
         if game_over:
@@ -32,7 +33,7 @@ class Game:
             return game_over    
         
     def ourplay(self, choice):
-        # returns a tuple : (reward, game_over?)
+        # we make our move. returns a tuple : (reward, game_over?)
         new_board = self.board + choice
         if new_board < self.board_lim:#if our choice stays in bounds, set board and let opponent go
             self.board = new_board
@@ -81,10 +82,9 @@ for g in range(num_of_games):
     r_list.append(total_reward)  
     
 #test q optimal
-epsilon=0    
 r_list = []
 
-for g in range(2000):
+for g in range(num_of_test_games):
     game_over = False
     opp_game_over=False
     game.reset() #this now makes opponent go first
@@ -97,18 +97,14 @@ for g in range(2000):
             choice = q_table[state].idxmax()
         reward, game_over, opp_game_over = game.ourplay(choice) #this does our move+opponents
         total_reward += reward
-        if game_over or opp_game_over: #if weve lost or opponent has, q(next state) used to update will be 0 as be in terminal state
-            next_state_max_q_val = 0
-        else: #next state is where opponent leaves us   
+        if not game_over and not opp_game_over:  
             next_state =game.board # this should always be in bounds
-            next_state_max_q_val = q_table[next_state].max()
            
-        q_table.loc[choice,state] = q_table.loc[choice,state]+alpha*(reward + gamma * (next_state_max_q_val -q_table.loc[choice,state]))
     r_list.append(total_reward)     
 
     
 plt.figure(figsize=(14,7))
-plt.plot(range(2000),r_list)
+plt.plot(range(num_of_test_games),r_list)
 plt.xlabel('Games played')
 plt.ylabel('Reward')
 plt.show()    
